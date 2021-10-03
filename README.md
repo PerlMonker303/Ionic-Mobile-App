@@ -1,9 +1,3 @@
-write here all the features
-
-ionic 1 - 3,4
-ionic 2 - 5,6
-
-poti sa ii arati si pe Teams daca nu poti ajunge
 
 # Features
 
@@ -12,7 +6,7 @@ poti sa ii arati si pe Teams daca nu poti ajunge
 - add a new magic card (use the camera for adding an image for the card)
 - edit an existing magic card
 - receive notifications when another user has added a card (using websockets)
-- display the geolocation on Google Maps
+- display the geolocation using Google Maps
 
 # Project Counterparts
 
