@@ -14,13 +14,22 @@ import "./styles.ts";
 import { exitOutline } from "ionicons/icons";
 import { useHistory } from "react-router";
 import Input from "./Input";
+import React from "react";
+import { ROUTE_LOGIN } from "..";
+import { useSelector } from "react-redux";
+import { getCurrentUser } from "../../account/selectors";
 
-type Props = {
-  isOffline: boolean;
-};
+type Props = {};
 
-const NewCard: React.FC<Props> = ({ isOffline }: Props) => {
+const NewCard: React.FC<Props> = (props: Props) => {
   const history = useHistory();
+  const loggedUser = useSelector(getCurrentUser);
+
+  React.useEffect(() => {
+    if (!loggedUser) {
+      history.replace(ROUTE_LOGIN);
+    }
+  }, [loggedUser]);
 
   return (
     <IonPage>
@@ -51,7 +60,7 @@ const NewCard: React.FC<Props> = ({ isOffline }: Props) => {
           </IonToolbar>
         </IonHeader>
 
-        <Input />
+        {loggedUser && <Input user={loggedUser} />}
       </IonContent>
     </IonPage>
   );

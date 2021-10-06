@@ -17,6 +17,7 @@ import {
 import Card from "../models/Card";
 import { CardsState } from "./reducer";
 import { setAddedCard } from "../account/actions";
+import { User } from "../models/User";
 
 export const fetchCards =
   (): ThunkAction<void, RootState, unknown, Action<string>> =>
@@ -32,15 +33,20 @@ export const fetchCards =
   };
 
 export const addCard =
-  (card: Card): ThunkAction<void, CardsState, unknown, Action<string>> =>
+  (
+    card: Card,
+    user: User
+  ): ThunkAction<void, CardsState, unknown, Action<string>> =>
   async (dispatch: Function) => {
     dispatch(addCardStart());
     try {
+      card.postedBy = user.Id.toString();
       await addCardApi(card);
 
       if (!card.image.startsWith("data:image/png;base64,")) {
         card.image = "data:image/png;base64," + card.image;
       }
+      card.postedBy = user.Username;
 
       dispatch(addCardSuccess(card));
       dispatch(setAddedCard(true));

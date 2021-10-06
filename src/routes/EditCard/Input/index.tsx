@@ -19,6 +19,8 @@ import { useStyles } from "./styles";
 import { getCards } from "../../../cards/selectors";
 import { isNumeric } from "../../../utils/common";
 import { CardMedia } from "@material-ui/core";
+import { ROUTE_HOME } from "../..";
+import { User } from "../../../models/User";
 
 const Input: React.FC = () => {
   const classes = useStyles();
@@ -31,6 +33,7 @@ const Input: React.FC = () => {
   const [description, setDescription] = React.useState("");
   const [stars, setStars] = React.useState(0);
   const [rare, setRare] = React.useState(false);
+  const [postedBy, setPostedBy] = React.useState("");
   const [uploadedPhoto, setUploadedPhoto] = React.useState("");
   const [showPopover, setShowPopover] = React.useState(false);
 
@@ -42,18 +45,19 @@ const Input: React.FC = () => {
 
   React.useEffect(() => {
     const cardId = params.id;
-    if (isNumeric(cardId)) {
-      const card = cards.find((c) => c.id === parseInt(cardId));
-      if (card) {
-        setId(card.id);
-        setTitle(card.title);
-        setDescription(card.description);
-        setStars(card.stars);
-        setRare(card.rare);
-        setUploadedPhoto(card.image);
-      } else {
-        setShowPopover(true);
-      }
+    if (!isNumeric(cardId)) {
+      setShowPopover(true);
+      return;
+    }
+    const card = cards.find((c) => c.id === parseInt(cardId));
+    if (card) {
+      setId(card.id);
+      setTitle(card.title);
+      setDescription(card.description);
+      setStars(card.stars);
+      setRare(card.rare);
+      setPostedBy(card.postedBy);
+      setUploadedPhoto(card.image);
     } else {
       setShowPopover(true);
     }
@@ -68,9 +72,10 @@ const Input: React.FC = () => {
       rare,
       addedOn: Date(),
       image: uploadedPhoto,
+      postedBy,
     };
     dispatch(updateCard(updatedCard));
-    history.push("/home");
+    history.push(ROUTE_HOME);
   };
 
   const takePhoto = async () => {
@@ -158,7 +163,7 @@ const Input: React.FC = () => {
       <IonPopover
         cssClass="my-custom-class"
         isOpen={showPopover}
-        onDidDismiss={() => history.replace("/home")}
+        onDidDismiss={() => history.replace(ROUTE_HOME)}
       >
         {renderPopover()}
       </IonPopover>

@@ -25,18 +25,17 @@ import { useStyles } from "./styles";
 import { setAddedCard, signOut } from "../../account/actions";
 import { getAddedCard, getCurrentUser } from "../../account/selectors";
 import * as signalR from "@microsoft/signalr";
+import { ROUTE_LOCATION, ROUTE_LOGIN, ROUTE_NEW } from "..";
+import { WS_ENDPOINT } from "../../api";
 
-type Props = {
-  isOffline: boolean;
-};
+type Props = {};
 
-const Home: React.FC<Props> = ({ isOffline }: Props) => {
+const Home: React.FC<Props> = (props: Props) => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const loggedUser = useSelector(getCurrentUser);
   const addedCard = useSelector(getAddedCard);
-  console.log(isOffline);
 
   const [isToastVisible, setIsToastVisible] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState("");
@@ -45,7 +44,7 @@ const Home: React.FC<Props> = ({ isOffline }: Props) => {
 
   const connectToWebSockets = async () => {
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5000/hub", {
+      .withUrl(WS_ENDPOINT, {
         skipNegotiation: true,
         transport: signalR.HttpTransportType.WebSockets,
       })
@@ -53,7 +52,7 @@ const Home: React.FC<Props> = ({ isOffline }: Props) => {
 
     connection.on("NEW_CARD_ADDED", (res) => {
       if (loggedUser?.Id !== res) {
-        setToastMessage("Somebody added a card.");
+        setToastMessage("Somebody added a card. Reload the page to see it.");
         setIsToastVisible(true);
       }
     });
@@ -81,12 +80,12 @@ const Home: React.FC<Props> = ({ isOffline }: Props) => {
   const clickedLogout = () => {
     dispatch(signOut());
 
-    history.push("/login");
+    history.push(ROUTE_LOGIN);
   };
 
   React.useEffect(() => {
     if (!loggedUser) {
-      history.replace("/login");
+      history.replace(ROUTE_LOGIN);
     } else {
       dispatch(fetchCards());
     }
@@ -113,17 +112,12 @@ const Home: React.FC<Props> = ({ isOffline }: Props) => {
         </IonItemGroup>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Magic Cards</IonTitle>
-          </IonToolbar>
-        </IonHeader>
         <IonFab vertical="bottom" horizontal="center" slot="fixed">
           <IonRow>
             <IonCol>
               <IonFabButton
                 onClick={() => {
-                  history.push("/new");
+                  history.push(ROUTE_NEW);
                 }}
               >
                 <IonIcon icon={addOutline}></IonIcon>
@@ -132,7 +126,7 @@ const Home: React.FC<Props> = ({ isOffline }: Props) => {
             <IonCol>
               <IonFabButton
                 onClick={() => {
-                  history.push("/location");
+                  history.push(ROUTE_LOCATION);
                 }}
               >
                 <IonIcon icon={locationOutline}></IonIcon>

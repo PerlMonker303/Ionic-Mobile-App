@@ -2,7 +2,9 @@ import axios, { AxiosResponse } from "axios";
 import { User } from "../models/User";
 import Card from "../models/Card";
 
-const axiosInstance = axios.create({ baseURL: "http://localhost:5000/" });
+export const WS_ENDPOINT = "http://localhost:5000/hub";
+const API_ENDPOINT = "http://localhost:5000/";
+const axiosInstance = axios.create({ baseURL: API_ENDPOINT });
 
 export const loginApi = (username: string, password: string): Promise<User> => {
   return axiosInstance
@@ -13,13 +15,13 @@ export const loginApi = (username: string, password: string): Promise<User> => {
 };
 
 export const getLoggedUserApi = () => {
-  return axiosInstance.get(`getLoggedUser`).then((res: AxiosResponse) => {
+  return axiosInstance.get("getLoggedUser").then((res: AxiosResponse) => {
     return res.data;
   });
 };
 
 export const logOutApi = () => {
-  return axiosInstance.get(`logout`).then((res: AxiosResponse) => {
+  return axiosInstance.get("logout").then((res: AxiosResponse) => {
     return res.data;
   });
 };
@@ -35,5 +37,5 @@ export const addCardApi = (card: Card): Promise<Card> => {
 };
 
 export const updateCardApi = (card: Card): Promise<Card> => {
-  return axiosInstance.put(`card`, card).then((res) => res.data);
+  return axiosInstance.put("card", card).then((res) => res.data);
 };

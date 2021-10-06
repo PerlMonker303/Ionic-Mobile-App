@@ -1,15 +1,13 @@
 import {
   IonButton,
   IonContent,
-  IonFab,
-  IonFabButton,
   IonHeader,
-  IonIcon,
   IonInput,
   IonItem,
   IonLabel,
   IonPage,
   IonTitle,
+  IonToast,
   IonToolbar,
 } from "@ionic/react";
 import "./styles.ts";
@@ -18,27 +16,52 @@ import { useDispatch, useSelector } from "react-redux";
 import React from "react";
 import { useStyles } from "./styles";
 import { signIn } from "../../account/thunkActions";
-import { getCurrentUser } from "../../account/selectors";
+import {
+  getCurrentUser,
+  getErrorMessage,
+  getIsLoading,
+} from "../../account/selectors";
+import useToast from "../../hooks/useToast";
+import { ROUTE_HOME, ROUTE_LOGIN } from "..";
 
-type Props = {
-  isOffline: boolean;
-};
+type Props = {};
 
-const Login: React.FC<Props> = ({ isOffline }: Props) => {
+const Login: React.FC<Props> = (props: Props) => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const loggedUser = useSelector(getCurrentUser);
+  const errorMessage = useSelector(getErrorMessage);
+  const isUserLoading = useSelector(getIsLoading);
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const {
+    message: toastMessage,
+    setMessage: setToastMessage,
+    isVisible: isToastVisible,
+    setIsVisible: setIsToastVisible,
+  } = useToast("");
 
   const login = () => {
     dispatch(signIn(username, password));
   };
 
   React.useEffect(() => {
-    if (loggedUser) {
-      history.replace("/home");
+    if (loggedUser && !isUserLoading) {
+      history.push(ROUTE_HOME);
+    }
+  }, [isUserLoading]);
+
+  React.useEffect(() => {
+    if (errorMessage) {
+      setToastMessage(errorMessage);
+      setIsToastVisible(true);
+    }
+  }, [errorMessage]);
+
+  React.useEffect(() => {
+    if (!loggedUser) {
+      history.replace(ROUTE_LOGIN);
     }
   }, [loggedUser]);
 
@@ -72,6 +95,14 @@ const Login: React.FC<Props> = ({ isOffline }: Props) => {
         </IonItem>
 
         <IonButton onClick={login}>Log in</IonButton>
+
+        <IonToast
+          isOpen={isToastVisible}
+          onDidDismiss={() => setIsToastVisible(false)}
+          message={toastMessage}
+          duration={5000}
+          position="top"
+        />
       </IonContent>
     </IonPage>
   );

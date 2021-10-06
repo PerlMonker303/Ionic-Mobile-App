@@ -1,16 +1,30 @@
-import { IonContent, IonItem, IonList } from "@ionic/react";
+import {
+  IonContent,
+  IonItem,
+  IonList,
+  IonLoading,
+  IonToast,
+} from "@ionic/react";
 import Card from "./card";
 import CardType from "../models/Card";
 import { useStyles } from "./styles";
-import { getCards } from "./selectors";
+import {
+  getCards,
+  isGettingCardsLoading,
+  isGettingCardsError,
+} from "./selectors";
 import { useSelector } from "react-redux";
 
 const Cards: React.FC = () => {
   const cards: CardType[] = useSelector(getCards);
+  const isLoading = useSelector(isGettingCardsLoading);
+  const isError = useSelector(isGettingCardsError);
   const classes = useStyles();
 
   return (
     <IonContent className={classes.content}>
+      <IonLoading isOpen={isLoading} message={"Loading"} />
+      {isError && <IonToast isOpen={isError !== undefined} message={isError} />}
       <IonList>
         {cards.map((card) => (
           <IonItem key={card.id} button onClick={() => {}}>
@@ -23,6 +37,7 @@ const Cards: React.FC = () => {
               addedOn={card.addedOn}
               rare={card.rare}
               image={card.image}
+              postedBy={card.postedBy}
             />
           </IonItem>
         ))}

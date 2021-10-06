@@ -1,3 +1,4 @@
+import React from "react";
 import {
   IonButton,
   IonCard,
@@ -16,7 +17,7 @@ const Card: React.FC<CardType> = (props: CardType) => {
   const history = useHistory();
 
   const editCard = (cardId: number) => {
-    history.push("edit/" + cardId);
+    history.push("/edit/" + cardId);
   };
 
   return (
@@ -25,6 +26,7 @@ const Card: React.FC<CardType> = (props: CardType) => {
         <IonCardTitle>{props.title}</IonCardTitle>
         <IonButton onClick={() => editCard(props.id)}>Edit</IonButton>
         <IonCardSubtitle>{props.stars} / 7</IonCardSubtitle>
+        <IonCardSubtitle>Posted by: {props.postedBy}</IonCardSubtitle>
         <IonCardSubtitle>Date posted: {props.addedOn}</IonCardSubtitle>
         <IonCardSubtitle>Is rare: {props.rare ? "yes" : "no"}</IonCardSubtitle>
         <IonCardContent>{props.description}</IonCardContent>

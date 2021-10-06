@@ -13,11 +13,12 @@ export const signIn =
     dispatch(signInStart());
 
     try {
-      const user = await loginApi(username, password);
-      if (String(user) === "Failed") {
+      const resp = await loginApi(username, password);
+      if (String(resp) === "FAILED") {
         dispatch(signInFailure("Login failed"));
+        return;
       }
-      dispatch(signInSuccess(user));
+      dispatch(signInSuccess(resp));
     } catch (error) {
       dispatch(signInFailure(error));
     }

@@ -14,13 +14,23 @@ import "./styles.ts";
 import { exitOutline } from "ionicons/icons";
 import { useHistory } from "react-router";
 import Input from "./Input";
+import { ROUTE_LOGIN } from "..";
+import React from "react";
+import { getCurrentUser, getIsLoading } from "../../account/selectors";
+import { useSelector } from "react-redux";
 
-type Props = {
-  isOffline: boolean;
-};
+type Props = {};
 
-const NewCard: React.FC<Props> = ({ isOffline }: Props) => {
+const NewCard: React.FC<Props> = (props: Props) => {
   const history = useHistory();
+  const loggedUser = useSelector(getCurrentUser);
+  const isLoading = useSelector(getIsLoading);
+
+  React.useEffect(() => {
+    if (!loggedUser && !isLoading) {
+      history.replace(ROUTE_LOGIN);
+    }
+  }, [loggedUser]);
 
   return (
     <IonPage>
@@ -45,12 +55,6 @@ const NewCard: React.FC<Props> = ({ isOffline }: Props) => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Add a new Magic Card</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
         <Input />
       </IonContent>
     </IonPage>

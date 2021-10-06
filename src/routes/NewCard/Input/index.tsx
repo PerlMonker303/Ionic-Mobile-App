@@ -18,8 +18,15 @@ import { takePhotoInBase64 } from "../../../utils/imageHelper";
 import { useStyles } from "./styles";
 import { checkmarkCircleOutline } from "ionicons/icons";
 import { CardMedia } from "@material-ui/core";
+import { ROUTE_HOME } from "../..";
+import { User } from "../../../models/User";
 
-const Input: React.FC = () => {
+type Props = {
+  user: User;
+};
+
+const Input: React.FC<Props> = (props: Props) => {
+  const { user } = props;
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -28,6 +35,7 @@ const Input: React.FC = () => {
   const [description, setDescription] = React.useState("");
   const [stars, setStars] = React.useState(0);
   const [rare, setRare] = React.useState(false);
+  const [postedBy, setPostedBy] = React.useState("");
   const [uploadedPhoto, setUploadedPhoto] = React.useState("");
 
   React.useEffect(() => {
@@ -48,9 +56,10 @@ const Input: React.FC = () => {
       rare,
       addedOn: Date(),
       image: uploadedPhoto,
+      postedBy,
     };
-    dispatch(addCard(newCard));
-    history.push("/home");
+    dispatch(addCard(newCard, user));
+    history.push(ROUTE_HOME);
   };
 
   const takePhoto = async () => {

@@ -19,13 +19,17 @@ import { CircularProgress } from "@material-ui/core";
 import EditCard from "./routes/EditCard";
 import Login from "./routes/Login";
 import GeoLocation from "./routes/GeoLocation";
-// import { Network } from "@ionic-native/network";
-import { Plugins } from "@capacitor/core";
+import {
+  ROUTE_EDIT,
+  ROUTE_HOME,
+  ROUTE_LOCATION,
+  ROUTE_LOGIN,
+  ROUTE_NEW,
+} from "./routes";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 const App: React.FC = () => {
   const [networkState, setNetworkState] = React.useState("offline");
-
-  const { Network } = Plugins;
 
   React.useEffect(() => {
     window.addEventListener("online", () => {
@@ -35,12 +39,6 @@ const App: React.FC = () => {
     window.addEventListener("offline", () => {
       setNetworkState("offline");
     });
-    // Network &&
-    //   Network.addListener(
-    //     "networkStatusChange",
-    //     (status: { connectionType: React.SetStateAction<string> }) =>
-    //       setNetworkState(status.connectionType)
-    //   );
   }, []);
 
   return (
@@ -52,22 +50,14 @@ const App: React.FC = () => {
         <IonApp>
           <IonReactRouter>
             <IonRouterOutlet>
-              <Route exact path="/home">
-                <Home isOffline={networkState === "offline"} />
+              <Route exact path={ROUTE_NEW} component={NewCard} />
+              <Route exact path={ROUTE_EDIT} component={EditCard} />
+              <Route exact path={ROUTE_HOME} component={Home} />
+              <Route exact path={ROUTE_LOCATION} component={GeoLocation} />
+              <Route exact path={ROUTE_LOGIN}>
+                <Login />
               </Route>
-              <Route exact path="/login">
-                <Login isOffline={networkState === "offline"} />
-              </Route>
-              <Route exact path="/new">
-                <NewCard isOffline={networkState === "offline"} />
-              </Route>
-              <Route path="/edit/:id">
-                <EditCard isOffline={networkState === "offline"} />
-              </Route>
-              <Route path="/location">
-                <GeoLocation isOffline={networkState === "offline"} />
-              </Route>
-              <Route component={Home} />
+              <Route component={Login} />
             </IonRouterOutlet>
           </IonReactRouter>
         </IonApp>

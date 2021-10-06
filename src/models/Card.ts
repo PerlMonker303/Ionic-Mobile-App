@@ -6,6 +6,7 @@ type Card = {
   addedOn: string;
   rare: boolean;
   image: string;
+  postedBy: string;
 };
 
 export default Card;

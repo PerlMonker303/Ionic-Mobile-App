@@ -25,6 +25,7 @@ const accountReducer = (
       return {
         ...state,
         isLoading: true,
+        error: undefined,
       };
     case ActionTypes.SIGN_IN_SUCCESS:
       return {

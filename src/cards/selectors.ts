@@ -12,3 +12,8 @@ export const isGettingCardsLoading = createSelector(
   getCardsState,
   (cardsState) => cardsState.loadingGettingCards
 );
+
+export const isGettingCardsError = createSelector(
+  getCardsState,
+  (cardsState) => cardsState.errorGettingCards
+);
