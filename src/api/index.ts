@@ -14,28 +14,41 @@ export const loginApi = (username: string, password: string): Promise<User> => {
     });
 };
 
-export const getLoggedUserApi = () => {
-  return axiosInstance.get("getLoggedUser").then((res: AxiosResponse) => {
+export const getAllCardsApi = (token: string): Promise<Card[]> => {
+  return axiosInstance.get(`card?token=${token}`).then((res: AxiosResponse) => {
     return res.data;
   });
 };
 
-export const logOutApi = () => {
-  return axiosInstance.get("logout").then((res: AxiosResponse) => {
-    return res.data;
-  });
+export const getCardsAfterIdApi = (
+  afterId: number,
+  count: number,
+  token: string
+): Promise<Card[]> => {
+  return axiosInstance
+    .get(`cardsAfterId?afterId=${afterId}&count=${count}&token=${token}`)
+    .then((res: AxiosResponse) => {
+      return res.data;
+    });
 };
 
-export const getAllCardsApi = (): Promise<Card[]> => {
-  return axiosInstance.get("card").then((res: AxiosResponse) => {
-    return res.data;
-  });
+export const getCardsByTitleApi = (
+  title: string,
+  token: string
+): Promise<Card[]> => {
+  return axiosInstance
+    .get(`cardsByTitle?title=${title}&token=${token}`)
+    .then((res: AxiosResponse) => {
+      return res.data;
+    });
 };
 
-export const addCardApi = (card: Card): Promise<Card> => {
-  return axiosInstance.post("card", card).then((res) => res.data);
+export const addCardApi = (card: Card, token: string): Promise<Card> => {
+  return axiosInstance
+    .post(`card?token=${token}`, card)
+    .then((res) => res.data);
 };
 
-export const updateCardApi = (card: Card): Promise<Card> => {
-  return axiosInstance.put("card", card).then((res) => res.data);
+export const updateCardApi = (card: Card, token: string): Promise<Card> => {
+  return axiosInstance.put(`card?token=${token}`, card).then((res) => res.data);
 };

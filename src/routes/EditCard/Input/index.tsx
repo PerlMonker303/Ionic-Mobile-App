@@ -20,13 +20,16 @@ import { getCards } from "../../../cards/selectors";
 import { isNumeric } from "../../../utils/common";
 import { CardMedia } from "@material-ui/core";
 import { ROUTE_HOME } from "../..";
-import { User } from "../../../models/User";
+import { getSocketConnection } from "../../../app/selectors";
+import { getCurrentUser } from "../../../account/selectors";
 
 const Input: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const cards: Card[] = useSelector(getCards);
+  const socketConnection = useSelector(getSocketConnection);
+  const loggedUser = useSelector(getCurrentUser);
   const params = useParams<{ id: string }>();
   const [id, setId] = React.useState(-1);
   const [title, setTitle] = React.useState("");
@@ -75,7 +78,10 @@ const Input: React.FC = () => {
       postedBy,
     };
     dispatch(updateCard(updatedCard));
-    history.push(ROUTE_HOME);
+    console.log(postedBy);
+    socketConnection &&
+      socketConnection.invoke("CardModified", loggedUser!.Id, postedBy);
+    history.replace(ROUTE_HOME);
   };
 
   const takePhoto = async () => {

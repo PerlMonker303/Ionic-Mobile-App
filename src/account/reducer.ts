@@ -3,16 +3,16 @@ import { ActionTypes } from "./actionTypes";
 import { User } from "../models/User";
 
 export type AccountState = {
-  currentUser?: User;
+  currentUser: User | null;
   isLoading: boolean;
-  error?: string;
+  error: string;
   addedCard: boolean;
 };
 
 export const accountInitialState: AccountState = {
-  currentUser: undefined,
+  currentUser: null,
   isLoading: false,
-  error: undefined,
+  error: "",
   addedCard: false,
 };
 

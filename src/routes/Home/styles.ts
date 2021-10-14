@@ -10,4 +10,8 @@ export const useStyles = makeStyles({
     flexDirection: "row",
     alignItems: "center",
   },
+  title: {
+    fontWeight: "bold",
+    fontSize: "larger",
+  },
 });

@@ -19,6 +19,9 @@ export const signIn =
         return;
       }
       dispatch(signInSuccess(resp));
+      // store to local storage
+      //localStorage.setItem("id", resp.Id.toString());
+      //localStorage.setItem("username", resp.Username);
     } catch (error) {
       dispatch(signInFailure(error));
     }

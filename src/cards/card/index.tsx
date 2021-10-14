@@ -6,6 +6,9 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
+  IonItem,
+  IonItemGroup,
+  IonText,
 } from "@ionic/react";
 import { CardMedia } from "@material-ui/core";
 import { useHistory } from "react-router";
@@ -23,9 +26,12 @@ const Card: React.FC<CardType> = (props: CardType) => {
   return (
     <IonCard className={classes.card}>
       <IonCardHeader>
-        <IonCardTitle>{props.title}</IonCardTitle>
-        <IonButton onClick={() => editCard(props.id)}>Edit</IonButton>
-        <IonCardSubtitle>{props.stars} / 7</IonCardSubtitle>
+        <IonItemGroup className={classes.cardHeader}>
+          <IonText className={classes.cardTitle}>{props.title}</IonText>
+          <IonButton onClick={() => editCard(props.id)}>Edit</IonButton>
+        </IonItemGroup>
+
+        <IonCardSubtitle>Stars: {props.stars} / 7</IonCardSubtitle>
         <IonCardSubtitle>Posted by: {props.postedBy}</IonCardSubtitle>
         <IonCardSubtitle>Date posted: {props.addedOn}</IonCardSubtitle>
         <IonCardSubtitle>Is rare: {props.rare ? "yes" : "no"}</IonCardSubtitle>

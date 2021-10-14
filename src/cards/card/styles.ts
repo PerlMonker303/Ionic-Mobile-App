@@ -9,4 +9,12 @@ export const useStyles = makeStyles({
     width: "auto",
     height: "auto",
   },
+  cardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  cardTitle: {
+    fontWeight: "bold",
+    fontSize: "26px",
+  },
 });

@@ -25,22 +25,11 @@ import {
   ROUTE_LOCATION,
   ROUTE_LOGIN,
   ROUTE_NEW,
+  ROUTE_SEARCH,
 } from "./routes";
-import ProtectedRoute from "./routes/ProtectedRoute";
+import Search from "./routes/Search";
 
 const App: React.FC = () => {
-  const [networkState, setNetworkState] = React.useState("offline");
-
-  React.useEffect(() => {
-    window.addEventListener("online", () => {
-      setNetworkState("online");
-    });
-
-    window.addEventListener("offline", () => {
-      setNetworkState("offline");
-    });
-  }, []);
-
   return (
     <Provider store={store}>
       <PersistGate
@@ -54,6 +43,7 @@ const App: React.FC = () => {
               <Route exact path={ROUTE_EDIT} component={EditCard} />
               <Route exact path={ROUTE_HOME} component={Home} />
               <Route exact path={ROUTE_LOCATION} component={GeoLocation} />
+              <Route exact path={ROUTE_SEARCH} component={Search} />
               <Route exact path={ROUTE_LOGIN}>
                 <Login />
               </Route>

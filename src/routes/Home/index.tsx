@@ -1,32 +1,32 @@
 import React from "react";
 import {
   IonButton,
-  IonCol,
   IonContent,
-  IonFab,
-  IonFabButton,
   IonHeader,
   IonIcon,
+  IonItem,
   IonItemGroup,
   IonLabel,
   IonPage,
-  IonRow,
-  IonTitle,
-  IonToast,
-  IonToolbar,
+  useIonToast,
 } from "@ionic/react";
 import Cards from "../../cards";
 import "./styles.ts";
-import { addOutline, locationOutline } from "ionicons/icons";
+import { exitOutline } from "ionicons/icons";
 import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCards } from "../../cards/thunkActions";
+import { fetchCardsAfterId } from "../../cards/thunkActions";
 import { useStyles } from "./styles";
 import { setAddedCard, signOut } from "../../account/actions";
 import { getAddedCard, getCurrentUser } from "../../account/selectors";
 import * as signalR from "@microsoft/signalr";
-import { ROUTE_LOCATION, ROUTE_LOGIN, ROUTE_NEW } from "..";
+import { ROUTE_LOGIN } from "..";
 import { WS_ENDPOINT } from "../../api";
+import { useNetwork } from "../../hooks/useNetwork";
+import { setOffline, setOnline, setSocketConnection } from "../../app/actions";
+import { getIsOnline, getSocketConnection } from "../../app/selectors";
+import FilterPanel from "./FilterPanel";
+import Buttons from "./Buttons";
 
 type Props = {};
 
@@ -36,11 +36,12 @@ const Home: React.FC<Props> = (props: Props) => {
   const dispatch = useDispatch();
   const loggedUser = useSelector(getCurrentUser);
   const addedCard = useSelector(getAddedCard);
-
-  const [isToastVisible, setIsToastVisible] = React.useState(false);
-  const [toastMessage, setToastMessage] = React.useState("");
-  const [socketConnection, setSocketConnection] =
-    React.useState<signalR.HubConnection>();
+  const isOnline = useSelector(getIsOnline);
+  const socketConnection = useSelector(getSocketConnection);
+  const { networkStatus } = useNetwork();
+  const [presentToast, dismiss] = useIonToast();
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = React.useState(false);
+  const [selectedFilter, setSelectedFilter] = React.useState(-1);
 
   const connectToWebSockets = async () => {
     const connection = new signalR.HubConnectionBuilder()
@@ -52,8 +53,24 @@ const Home: React.FC<Props> = (props: Props) => {
 
     connection.on("NEW_CARD_ADDED", (res) => {
       if (loggedUser?.Id !== res) {
-        setToastMessage("Somebody added a card. Reload the page to see it.");
-        setIsToastVisible(true);
+        presentToast({
+          message: "Somebody added a card. Reload the page to see it.",
+          position: "top",
+          translucent: true,
+          duration: 3000,
+        });
+      }
+    });
+
+    connection.on("CARD_MODIFIED", (idUser, username) => {
+      if (loggedUser?.Username === username && loggedUser!.Id !== idUser) {
+        presentToast({
+          message:
+            "Somebody modified a card you posted. Reload the page to see it.",
+          position: "top",
+          translucent: true,
+          duration: 3000,
+        });
       }
     });
 
@@ -63,12 +80,10 @@ const Home: React.FC<Props> = (props: Props) => {
       console.error(err);
     }
 
-    setSocketConnection(connection);
+    dispatch(setSocketConnection(connection));
   };
 
   React.useEffect(() => {
-    dispatch(fetchCards());
-
     // websockets
     connectToWebSockets();
 
@@ -87,7 +102,7 @@ const Home: React.FC<Props> = (props: Props) => {
     if (!loggedUser) {
       history.replace(ROUTE_LOGIN);
     } else {
-      dispatch(fetchCards());
+      dispatch(fetchCardsAfterId(-1, 3));
     }
   }, [loggedUser]);
 
@@ -97,53 +112,59 @@ const Home: React.FC<Props> = (props: Props) => {
     }
   }, [addedCard]);
 
+  React.useEffect(() => {
+    console.log("Network status changed: ", networkStatus.connected);
+
+    if (networkStatus.connected !== isOnline) {
+      let msg = "";
+      if (networkStatus.connected) {
+        dispatch(setOnline());
+        msg = "You are online!";
+      } else {
+        dispatch(setOffline());
+        msg = "You are offline!";
+      }
+      presentToast({
+        message: msg,
+        position: "top",
+        translucent: true,
+        duration: 3000,
+      });
+    }
+  }, [networkStatus]);
+
+  React.useEffect(() => {
+    // todo: dispatch to set selectedFilter
+    // also fetch the data
+  }, [selectedFilter]);
+
   return (
     <IonPage>
       <IonHeader>
         <IonItemGroup className={classes.header}>
-          <IonToolbar>
-            <IonTitle>Magic Cards</IonTitle>
-          </IonToolbar>
+          <IonItem className={classes.title}>Magic Cards</IonItem>
           <IonItemGroup className={classes.header_inner}>
             {loggedUser && <IonLabel>Hi, {loggedUser.Username}!</IonLabel>}
 
-            <IonButton onClick={clickedLogout}>Log out</IonButton>
+            <IonButton onClick={clickedLogout}>
+              <IonIcon icon={exitOutline}></IonIcon>
+            </IonButton>
           </IonItemGroup>
         </IonItemGroup>
       </IonHeader>
       <IonContent fullscreen>
-        <IonFab vertical="bottom" horizontal="center" slot="fixed">
-          <IonRow>
-            <IonCol>
-              <IonFabButton
-                onClick={() => {
-                  history.push(ROUTE_NEW);
-                }}
-              >
-                <IonIcon icon={addOutline}></IonIcon>
-              </IonFabButton>
-            </IonCol>
-            <IonCol>
-              <IonFabButton
-                onClick={() => {
-                  history.push(ROUTE_LOCATION);
-                }}
-              >
-                <IonIcon icon={locationOutline}></IonIcon>
-              </IonFabButton>
-            </IonCol>
-          </IonRow>
-        </IonFab>
-        <Cards />
-
-        <IonToast
-          isOpen={isToastVisible}
-          onDidDismiss={() => setIsToastVisible(false)}
-          message={toastMessage}
-          duration={5000}
-          position="top"
+        <Buttons
+          isFilterPanelOpen={isFilterPanelOpen}
+          setIsFilterPanelOpen={setIsFilterPanelOpen}
         />
+        <Cards />
       </IonContent>
+      {isFilterPanelOpen && (
+        <FilterPanel
+          setSelectedFilter={setSelectedFilter}
+          closeFilterPanel={() => setIsFilterPanelOpen(false)}
+        />
+      )}
     </IonPage>
   );
 };

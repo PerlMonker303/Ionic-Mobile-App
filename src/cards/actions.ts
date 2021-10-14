@@ -57,6 +57,70 @@ export const getCardsFailure = (errorMessage: string): GetCardsFailure => ({
   errorMessage,
 });
 
+export type GetCardsAfterIdStart = {
+  type: ActionTypes.GET_CARDS_AFTER_ID_START;
+};
+
+export type GetCardsAfterIdSuccess = {
+  type: ActionTypes.GET_CARDS_AFTER_ID_SUCCESS;
+  cards: Card[];
+};
+
+export type GetCardsAfterIdFailure = {
+  type: ActionTypes.GET_CARDS_AFTER_ID_FAILURE;
+  errorMessage: string;
+};
+
+export const getCardsAfterIdStart = (): GetCardsAfterIdStart => ({
+  type: ActionTypes.GET_CARDS_AFTER_ID_START,
+});
+
+export const getCardsAfterIdSuccess = (
+  cards: Card[]
+): GetCardsAfterIdSuccess => ({
+  type: ActionTypes.GET_CARDS_AFTER_ID_SUCCESS,
+  cards,
+});
+
+export const getCardsAfterIdFailure = (
+  errorMessage: string
+): GetCardsAfterIdFailure => ({
+  type: ActionTypes.GET_CARDS_AFTER_ID_FAILURE,
+  errorMessage,
+});
+
+export type GetCardsByTitleStart = {
+  type: ActionTypes.GET_CARDS_BY_TITLE_START;
+};
+
+export type GetCardsByTitleSuccess = {
+  type: ActionTypes.GET_CARDS_BY_TITLE_SUCCESS;
+  cards: Card[];
+};
+
+export type GetCardsByTitleFailure = {
+  type: ActionTypes.GET_CARDS_BY_TITLE_FAILURE;
+  errorMessage: string;
+};
+
+export const getCardsByTitleStart = (): GetCardsByTitleStart => ({
+  type: ActionTypes.GET_CARDS_BY_TITLE_START,
+});
+
+export const getCardsByTitleSuccess = (
+  cards: Card[]
+): GetCardsByTitleSuccess => ({
+  type: ActionTypes.GET_CARDS_BY_TITLE_SUCCESS,
+  cards,
+});
+
+export const getCardsByTitleFailure = (
+  errorMessage: string
+): GetCardsByTitleFailure => ({
+  type: ActionTypes.GET_CARDS_BY_TITLE_FAILURE,
+  errorMessage,
+});
+
 export type UpdateCardStart = {
   type: ActionTypes.UPDATE_CARD_START;
 };
@@ -84,6 +148,15 @@ export const updateCardFailure = (errorMessage: string): UpdateCardFailure => ({
   type: ActionTypes.UPDATE_CARD_FAILURE,
   errorMessage,
 });
+
+export type ClearCards = {
+  type: ActionTypes.CLEAR_CARDS;
+};
+
+export const clearCards = (): ClearCards => ({
+  type: ActionTypes.CLEAR_CARDS,
+});
+
 export type CardsActions =
   | AddCardStart
   | AddCardSuccess
@@ -91,6 +164,13 @@ export type CardsActions =
   | GetCardsStart
   | GetCardsSuccess
   | GetCardsFailure
+  | GetCardsAfterIdStart
+  | GetCardsAfterIdSuccess
+  | GetCardsAfterIdFailure
+  | GetCardsByTitleStart
+  | GetCardsByTitleSuccess
+  | GetCardsByTitleFailure
   | UpdateCardStart
   | UpdateCardSuccess
-  | UpdateCardFailure;
+  | UpdateCardFailure
+  | ClearCards;

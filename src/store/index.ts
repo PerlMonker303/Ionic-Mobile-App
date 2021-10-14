@@ -1,16 +1,22 @@
-import { Middleware } from "redux";
+import { applyMiddleware, createStore, Middleware } from "redux";
 import thunk from "redux-thunk";
-import { persistentRootReducer } from "./reducers";
+import { persistentReducer } from "./reducers";
 import { persistStore } from "redux-persist";
-import { configureStore } from "@reduxjs/toolkit";
+import { composeWithDevTools } from "redux-devtools-extension";
 
 const middleWares: Middleware[] = [thunk];
 
-const store = configureStore({
-  reducer: persistentRootReducer,
-  middleware: middleWares,
-  devTools: true,
-});
+// const store = configureStore({
+//   reducer: combineReducers({
+//     accountState: persistentAccountReducer,
+//     cardsState: cardsReducer,
+//     appState: appReducer,
+//   }),
+//   middleware: middleWares,
+//   devTools: true,
+// });
+const middleware = applyMiddleware(thunk);
+const store = createStore(persistentReducer, composeWithDevTools(middleware));
 
 export const persistor = persistStore(store);
 

@@ -24,7 +24,7 @@ export const cardsInitialState: CardsState = {
   errorUpdatingCard: undefined,
 };
 
-const inspectionsReducer = (
+const cardsReducer = (
   state: CardsState = cardsInitialState,
   action: CardsActions | AccountAction
 ) => {
@@ -66,6 +66,42 @@ const inspectionsReducer = (
         loadingGettingCards: false,
         errorGettingCards: action.errorMessage,
       };
+    case ActionTypes.GET_CARDS_AFTER_ID_START:
+      return {
+        ...state,
+        loadingGettingCards: true,
+        errorGettingCards: undefined,
+      };
+    case ActionTypes.GET_CARDS_AFTER_ID_SUCCESS:
+      return {
+        ...state,
+        cards: [...state.cards, ...action.cards],
+        loadingGettingCards: false,
+      };
+    case ActionTypes.GET_CARDS_AFTER_ID_FAILURE:
+      return {
+        ...state,
+        loadingGettingCards: false,
+        errorGettingCards: action.errorMessage,
+      };
+    case ActionTypes.GET_CARDS_BY_TITLE_START:
+      return {
+        ...state,
+        loadingGettingCards: true,
+        errorGettingCards: undefined,
+      };
+    case ActionTypes.GET_CARDS_BY_TITLE_SUCCESS:
+      return {
+        ...state,
+        cards: [...action.cards],
+        loadingGettingCards: false,
+      };
+    case ActionTypes.GET_CARDS_BY_TITLE_FAILURE:
+      return {
+        ...state,
+        loadingGettingCards: false,
+        errorGettingCards: action.errorMessage,
+      };
     case ActionTypes.UPDATE_CARD_START:
       return {
         ...state,
@@ -87,6 +123,11 @@ const inspectionsReducer = (
         loadingUpdatingCard: false,
         errorUpdatingCard: action.errorMessage,
       };
+    case ActionTypes.CLEAR_CARDS:
+      return {
+        ...state,
+        cards: [],
+      };
     case AccountActionTypes.SIGN_OUT:
       return {
         ...cardsInitialState,
@@ -96,4 +137,4 @@ const inspectionsReducer = (
   }
 };
 
-export default inspectionsReducer;
+export default cardsReducer;
