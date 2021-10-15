@@ -121,6 +121,38 @@ export const getCardsByTitleFailure = (
   errorMessage,
 });
 
+export type GetCardsByStarsStart = {
+  type: ActionTypes.GET_CARDS_BY_STARS_START;
+};
+
+export type GetCardsByStarsSuccess = {
+  type: ActionTypes.GET_CARDS_BY_STARS_SUCCESS;
+  cards: Card[];
+};
+
+export type GetCardsByStarsFailure = {
+  type: ActionTypes.GET_CARDS_BY_STARS_FAILURE;
+  errorMessage: string;
+};
+
+export const getCardsByStarsStart = (): GetCardsByStarsStart => ({
+  type: ActionTypes.GET_CARDS_BY_STARS_START,
+});
+
+export const getCardsByStarsSuccess = (
+  cards: Card[]
+): GetCardsByStarsSuccess => ({
+  type: ActionTypes.GET_CARDS_BY_STARS_SUCCESS,
+  cards,
+});
+
+export const getCardsByStarsFailure = (
+  errorMessage: string
+): GetCardsByStarsFailure => ({
+  type: ActionTypes.GET_CARDS_BY_STARS_FAILURE,
+  errorMessage,
+});
+
 export type UpdateCardStart = {
   type: ActionTypes.UPDATE_CARD_START;
 };
@@ -149,6 +181,16 @@ export const updateCardFailure = (errorMessage: string): UpdateCardFailure => ({
   errorMessage,
 });
 
+export type SetFilterStars = {
+  type: ActionTypes.SET_FILTERS_STARS;
+  filterStars: number;
+};
+
+export const setFilterStars = (stars: number): SetFilterStars => ({
+  type: ActionTypes.SET_FILTERS_STARS,
+  filterStars: stars,
+});
+
 export type ClearCards = {
   type: ActionTypes.CLEAR_CARDS;
 };
@@ -170,7 +212,11 @@ export type CardsActions =
   | GetCardsByTitleStart
   | GetCardsByTitleSuccess
   | GetCardsByTitleFailure
+  | GetCardsByStarsStart
+  | GetCardsByStarsSuccess
+  | GetCardsByStarsFailure
   | UpdateCardStart
   | UpdateCardSuccess
   | UpdateCardFailure
+  | SetFilterStars
   | ClearCards;

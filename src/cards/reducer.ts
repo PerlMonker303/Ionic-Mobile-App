@@ -12,6 +12,7 @@ export type CardsState = {
   errorGettingCards?: string;
   errorAddingCard?: string;
   errorUpdatingCard?: string;
+  filterStars: number;
 };
 
 export const cardsInitialState: CardsState = {
@@ -22,6 +23,7 @@ export const cardsInitialState: CardsState = {
   errorGettingCards: undefined,
   errorAddingCard: undefined,
   errorUpdatingCard: undefined,
+  filterStars: -1,
 };
 
 const cardsReducer = (
@@ -102,6 +104,24 @@ const cardsReducer = (
         loadingGettingCards: false,
         errorGettingCards: action.errorMessage,
       };
+    case ActionTypes.GET_CARDS_BY_STARS_START:
+      return {
+        ...state,
+        loadingGettingCards: true,
+        errorGettingCards: undefined,
+      };
+    case ActionTypes.GET_CARDS_BY_STARS_SUCCESS:
+      return {
+        ...state,
+        cards: [...action.cards],
+        loadingGettingCards: false,
+      };
+    case ActionTypes.GET_CARDS_BY_STARS_FAILURE:
+      return {
+        ...state,
+        loadingGettingCards: false,
+        errorGettingCards: action.errorMessage,
+      };
     case ActionTypes.UPDATE_CARD_START:
       return {
         ...state,
@@ -123,6 +143,12 @@ const cardsReducer = (
         loadingUpdatingCard: false,
         errorUpdatingCard: action.errorMessage,
       };
+    case ActionTypes.SET_FILTERS_STARS: {
+      return {
+        ...state,
+        filterStars: action.filterStars,
+      };
+    }
     case ActionTypes.CLEAR_CARDS:
       return {
         ...state,

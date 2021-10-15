@@ -6,6 +6,7 @@ import {
   IonItem,
   IonList,
   IonLoading,
+  IonText,
   IonToast,
 } from "@ionic/react";
 import Card from "./card";
@@ -46,6 +47,7 @@ const Cards: React.FC = () => {
       <IonLoading isOpen={isLoading} message={"Loading"} />
       {isError && <IonToast isOpen={isError !== undefined} message={isError} />}
       <IonList>
+        {cards.length === 0 && <IonText>Nothing to show</IonText>}
         {cards.map((card) => (
           <IonItem key={card.id} button onClick={() => {}}>
             <Card

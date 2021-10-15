@@ -78,7 +78,6 @@ const Input: React.FC = () => {
       postedBy,
     };
     dispatch(updateCard(updatedCard));
-    console.log(postedBy);
     socketConnection &&
       socketConnection.invoke("CardModified", loggedUser!.Id, postedBy);
     history.replace(ROUTE_HOME);

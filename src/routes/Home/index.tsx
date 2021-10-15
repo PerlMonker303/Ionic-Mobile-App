@@ -15,7 +15,7 @@ import "./styles.ts";
 import { exitOutline } from "ionicons/icons";
 import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCardsAfterId } from "../../cards/thunkActions";
+import { fetchCardsAfterId, fetchCardsByStars } from "../../cards/thunkActions";
 import { useStyles } from "./styles";
 import { setAddedCard, signOut } from "../../account/actions";
 import { getAddedCard, getCurrentUser } from "../../account/selectors";
@@ -134,8 +134,7 @@ const Home: React.FC<Props> = (props: Props) => {
   }, [networkStatus]);
 
   React.useEffect(() => {
-    // todo: dispatch to set selectedFilter
-    // also fetch the data
+    dispatch(fetchCardsByStars(selectedFilter));
   }, [selectedFilter]);
 
   return (

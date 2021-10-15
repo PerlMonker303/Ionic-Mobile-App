@@ -12,6 +12,7 @@ const FilterPanel: React.FC<Props> = (props: Props) => {
   const renderButton = (idx: number) => {
     return (
       <IonItem
+        key={idx}
         button
         onClick={() => {
           setSelectedFilter(idx);

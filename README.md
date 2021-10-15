@@ -9,10 +9,10 @@
 - display the geolocation using Google Maps
 - pagination with infinite scrolling
 - search for cards by title
+- filter cards by number of stars
 
 # To do:
 
-- filter
 - offline mode
 - make sure you use the filesystem when using the camera
 

@@ -4,6 +4,7 @@ import {
   addCardApi,
   getAllCardsApi,
   getCardsAfterIdApi,
+  getCardsByStarsApi,
   getCardsByTitleApi,
   updateCardApi,
 } from "../api";
@@ -25,6 +26,10 @@ import {
   getCardsByTitleSuccess,
   getCardsByTitleFailure,
   clearCards,
+  setFilterStars,
+  getCardsByStarsStart,
+  getCardsByStarsSuccess,
+  getCardsByStarsFailure,
 } from "./actions";
 import Card from "../models/Card";
 import { setAddedCard } from "../account/actions";
@@ -62,6 +67,7 @@ export const fetchCardsAfterId =
       const cards: Card[] = await getCardsAfterIdApi(
         afterId,
         count,
+        state.cardsState.filterStars,
         state.accountState.currentUser?.Token!
       );
       dispatch(getCardsAfterIdSuccess(cards));
@@ -83,6 +89,23 @@ export const fetchCardsByTitle =
       dispatch(getCardsByTitleSuccess(cards));
     } catch (error) {
       dispatch(getCardsByTitleFailure(error as string));
+    }
+  };
+
+export const fetchCardsByStars =
+  (stars: number): ThunkAction<void, RootState, unknown, Action<string>> =>
+  async (dispatch: Function, getState) => {
+    const state = getState();
+    dispatch(setFilterStars(stars));
+    dispatch(getCardsByStarsStart());
+    try {
+      const cards: Card[] = await getCardsByStarsApi(
+        stars,
+        state.accountState.currentUser?.Token!
+      );
+      dispatch(getCardsByStarsSuccess(cards));
+    } catch (error) {
+      dispatch(getCardsByStarsFailure(error as string));
     }
   };
 

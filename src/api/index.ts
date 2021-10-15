@@ -23,10 +23,13 @@ export const getAllCardsApi = (token: string): Promise<Card[]> => {
 export const getCardsAfterIdApi = (
   afterId: number,
   count: number,
+  filterStars: number,
   token: string
 ): Promise<Card[]> => {
   return axiosInstance
-    .get(`cardsAfterId?afterId=${afterId}&count=${count}&token=${token}`)
+    .get(
+      `cardsAfterId?afterId=${afterId}&count=${count}&filterStars=${filterStars}&token=${token}`
+    )
     .then((res: AxiosResponse) => {
       return res.data;
     });
@@ -38,6 +41,17 @@ export const getCardsByTitleApi = (
 ): Promise<Card[]> => {
   return axiosInstance
     .get(`cardsByTitle?title=${title}&token=${token}`)
+    .then((res: AxiosResponse) => {
+      return res.data;
+    });
+};
+
+export const getCardsByStarsApi = (
+  stars: number,
+  token: string
+): Promise<Card[]> => {
+  return axiosInstance
+    .get(`cardsByStars?stars=${stars}&token=${token}`)
     .then((res: AxiosResponse) => {
       return res.data;
     });
