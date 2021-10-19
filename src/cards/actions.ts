@@ -1,4 +1,5 @@
 import Card from "../models/Card";
+import Transaction from "../models/Transaction";
 import { ActionTypes } from "./actionTypes";
 
 export type AddCardStart = {
@@ -13,6 +14,7 @@ export type AddCardSuccess = {
 export type AddCardFailure = {
   type: ActionTypes.ADD_CARD_FAILURE;
   errorMessage: string;
+  transaction: Transaction;
 };
 
 export const addCardStart = (): AddCardStart => ({
@@ -24,9 +26,13 @@ export const addCardSuccess = (newCard: Card): AddCardSuccess => ({
   newCard,
 });
 
-export const addCardFailure = (errorMessage: string): AddCardFailure => ({
+export const addCardFailure = (
+  errorMessage: string,
+  transaction: Transaction
+): AddCardFailure => ({
   type: ActionTypes.ADD_CARD_FAILURE,
   errorMessage,
+  transaction,
 });
 
 export type GetCardsStart = {
@@ -165,6 +171,7 @@ export type UpdateCardSuccess = {
 export type UpdateCardFailure = {
   type: ActionTypes.UPDATE_CARD_FAILURE;
   errorMessage: string;
+  transaction: Transaction;
 };
 
 export const updateCardStart = (): UpdateCardStart => ({
@@ -176,9 +183,13 @@ export const updateCardSuccess = (updatedCard: Card): UpdateCardSuccess => ({
   updatedCard,
 });
 
-export const updateCardFailure = (errorMessage: string): UpdateCardFailure => ({
+export const updateCardFailure = (
+  errorMessage: string,
+  transaction: Transaction
+): UpdateCardFailure => ({
   type: ActionTypes.UPDATE_CARD_FAILURE,
   errorMessage,
+  transaction,
 });
 
 export type SetFilterStars = {
@@ -197,6 +208,14 @@ export type ClearCards = {
 
 export const clearCards = (): ClearCards => ({
   type: ActionTypes.CLEAR_CARDS,
+});
+
+export type ClearFailedTransactions = {
+  type: ActionTypes.CLEAR_FAILED_TRANSACTIONS;
+};
+
+export const clearFailedTransactions = (): ClearFailedTransactions => ({
+  type: ActionTypes.CLEAR_FAILED_TRANSACTIONS,
 });
 
 export type CardsActions =
@@ -219,4 +238,5 @@ export type CardsActions =
   | UpdateCardSuccess
   | UpdateCardFailure
   | SetFilterStars
-  | ClearCards;
+  | ClearCards
+  | ClearFailedTransactions;

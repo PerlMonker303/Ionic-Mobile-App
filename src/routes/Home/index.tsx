@@ -15,7 +15,11 @@ import "./styles.ts";
 import { exitOutline } from "ionicons/icons";
 import { useHistory } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCardsAfterId, fetchCardsByStars } from "../../cards/thunkActions";
+import {
+  executeFailedTransactions,
+  fetchCardsAfterId,
+  fetchCardsByStars,
+} from "../../cards/thunkActions";
 import { useStyles } from "./styles";
 import { setAddedCard, signOut } from "../../account/actions";
 import { getAddedCard, getCurrentUser } from "../../account/selectors";
@@ -27,6 +31,7 @@ import { setOffline, setOnline, setSocketConnection } from "../../app/actions";
 import { getIsOnline, getSocketConnection } from "../../app/selectors";
 import FilterPanel from "./FilterPanel";
 import Buttons from "./Buttons";
+import { isAddingCardError, isUpdatingCardError } from "../../cards/selectors";
 
 type Props = {};
 
@@ -37,11 +42,14 @@ const Home: React.FC<Props> = (props: Props) => {
   const loggedUser = useSelector(getCurrentUser);
   const addedCard = useSelector(getAddedCard);
   const isOnline = useSelector(getIsOnline);
+  const isErrorAddingCard = useSelector(isAddingCardError);
+  const isErrorUpdatingCard = useSelector(isUpdatingCardError);
   const socketConnection = useSelector(getSocketConnection);
   const { networkStatus } = useNetwork();
   const [presentToast, dismiss] = useIonToast();
   const [isFilterPanelOpen, setIsFilterPanelOpen] = React.useState(false);
   const [selectedFilter, setSelectedFilter] = React.useState(-1);
+  const [firstRender, setFirstRender] = React.useState(true);
 
   const connectToWebSockets = async () => {
     const connection = new signalR.HubConnectionBuilder()
@@ -90,6 +98,7 @@ const Home: React.FC<Props> = (props: Props) => {
     setTimeout(() => {
       dispatch(setAddedCard(false));
     }, 5000);
+    setFirstRender(false);
   }, []);
 
   const clickedLogout = () => {
@@ -113,13 +122,15 @@ const Home: React.FC<Props> = (props: Props) => {
   }, [addedCard]);
 
   React.useEffect(() => {
-    console.log("Network status changed: ", networkStatus.connected);
-
     if (networkStatus.connected !== isOnline) {
       let msg = "";
       if (networkStatus.connected) {
         dispatch(setOnline());
         msg = "You are online!";
+        // execute all failed transactions after one second
+        setTimeout(() => {
+          dispatch(executeFailedTransactions());
+        }, 1000);
       } else {
         dispatch(setOffline());
         msg = "You are offline!";
@@ -134,8 +145,33 @@ const Home: React.FC<Props> = (props: Props) => {
   }, [networkStatus]);
 
   React.useEffect(() => {
-    dispatch(fetchCardsByStars(selectedFilter));
+    if (!firstRender) {
+      dispatch(fetchCardsByStars(selectedFilter));
+    }
   }, [selectedFilter]);
+
+  React.useEffect(() => {
+    if (isErrorAddingCard) {
+      dismiss();
+      presentToast({
+        message:
+          "Card added locally. Reestablish the internet connection to add it to the server.",
+        position: "top",
+        translucent: true,
+        duration: 3000,
+      });
+    }
+    if (isErrorUpdatingCard) {
+      dismiss();
+      presentToast({
+        message:
+          "Card updated locally. Reestablish the internet connection to make the changes permanent.",
+        position: "top",
+        translucent: true,
+        duration: 3000,
+      });
+    }
+  }, [isErrorAddingCard, isErrorUpdatingCard]);
 
   return (
     <IonPage>

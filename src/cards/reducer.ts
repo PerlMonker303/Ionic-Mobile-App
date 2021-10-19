@@ -3,6 +3,7 @@ import { ActionTypes } from "./actionTypes";
 import { CardsActions } from "./actions";
 import { AccountAction } from "../account/actions";
 import { ActionTypes as AccountActionTypes } from "../account/actionTypes";
+import Transaction from "../models/Transaction";
 
 export type CardsState = {
   cards: Card[];
@@ -13,6 +14,7 @@ export type CardsState = {
   errorAddingCard?: string;
   errorUpdatingCard?: string;
   filterStars: number;
+  failedTransactions: Transaction[];
 };
 
 export const cardsInitialState: CardsState = {
@@ -24,6 +26,7 @@ export const cardsInitialState: CardsState = {
   errorAddingCard: undefined,
   errorUpdatingCard: undefined,
   filterStars: -1,
+  failedTransactions: [],
 };
 
 const cardsReducer = (
@@ -49,6 +52,7 @@ const cardsReducer = (
         ...state,
         loadingAddingCard: false,
         errorAddingCard: action.errorMessage,
+        failedTransactions: [...state.failedTransactions, action.transaction],
       };
     case ActionTypes.GET_CARDS_START:
       return {
@@ -142,6 +146,7 @@ const cardsReducer = (
         ...state,
         loadingUpdatingCard: false,
         errorUpdatingCard: action.errorMessage,
+        failedTransactions: [...state.failedTransactions, action.transaction],
       };
     case ActionTypes.SET_FILTERS_STARS: {
       return {
@@ -153,6 +158,11 @@ const cardsReducer = (
       return {
         ...state,
         cards: [],
+      };
+    case ActionTypes.CLEAR_FAILED_TRANSACTIONS:
+      return {
+        ...state,
+        failedTransactions: [],
       };
     case AccountActionTypes.SIGN_OUT:
       return {

@@ -30,11 +30,14 @@ import {
   getCardsByStarsStart,
   getCardsByStarsSuccess,
   getCardsByStarsFailure,
+  clearFailedTransactions,
 } from "./actions";
 import Card from "../models/Card";
 import { setAddedCard } from "../account/actions";
 import { User } from "../models/User";
 import { format } from "date-fns";
+import Transaction from "../models/Transaction";
+import { createTransaction } from "../utils/createTransaction";
 
 export const fetchCards =
   (): ThunkAction<void, RootState, unknown, Action<string>> =>
@@ -112,14 +115,20 @@ export const fetchCardsByStars =
 export const addCard =
   (
     card: Card,
-    user: User
+    user: User,
+    retry?: Boolean
   ): ThunkAction<void, RootState, unknown, Action<string>> =>
   async (dispatch: Function, getState) => {
+    const state = getState();
     dispatch(addCardStart());
     try {
-      const state = getState();
-      card.postedBy = user.Id.toString();
-      card.addedOn = format(Date.parse(card.addedOn), "MM/dd/yyyy HH:mm:ss a");
+      if (!retry) {
+        card.postedBy = user.Id.toString();
+        card.addedOn = format(
+          Date.parse(card.addedOn),
+          "MM/dd/yyyy HH:mm:ss a"
+        );
+      }
       await addCardApi(card, state.accountState.currentUser?.Token!);
 
       if (!card.image.startsWith("data:image/png;base64,")) {
@@ -130,7 +139,11 @@ export const addCard =
       dispatch(addCardSuccess(card));
       dispatch(setAddedCard(true));
     } catch (error) {
-      dispatch(addCardFailure(error as string));
+      const failedTransaction: Transaction = createTransaction(
+        "addCard",
+        JSON.stringify({ card, user })
+      );
+      dispatch(addCardFailure(error as string, failedTransaction));
     }
   };
 
@@ -148,6 +161,34 @@ export const updateCard =
 
       dispatch(updateCardSuccess(card));
     } catch (error) {
-      dispatch(updateCardFailure(error as string));
+      const failedTransaction: Transaction = createTransaction(
+        "updateCard",
+        JSON.stringify({ card })
+      );
+      dispatch(updateCardFailure(error as string, failedTransaction));
+    }
+  };
+
+export const executeFailedTransactions =
+  (): ThunkAction<void, RootState, unknown, Action<string>> =>
+  async (dispatch: Function, getState) => {
+    const state = getState();
+    if (state.cardsState.failedTransactions.length > 0) {
+      dispatch(clearFailedTransactions());
+      const failedTransactions = state.cardsState.failedTransactions;
+
+      failedTransactions.map((transaction) => {
+        const params = JSON.parse(transaction.parameters);
+        switch (transaction.thunkAction) {
+          case "addCard":
+            dispatch(addCard(params.card, params.user, true));
+            break;
+          case "updateCard":
+            dispatch(updateCard(params.card));
+            break;
+          default:
+            break;
+        }
+      });
     }
   };

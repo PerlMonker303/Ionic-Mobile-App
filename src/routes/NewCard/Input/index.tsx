@@ -59,7 +59,18 @@ const Input: React.FC<Props> = (props: Props) => {
       postedBy,
     };
     dispatch(addCard(newCard, user));
+    resetStates();
     history.push(ROUTE_HOME);
+  };
+
+  const resetStates = () => {
+    setTitle("");
+    setDescription("");
+    setStars(0);
+    setRare(false);
+    setPostedBy("");
+    setUploadedPhoto("");
+    setAllFieldsCompleted(false);
   };
 
   const takePhoto = async () => {
@@ -94,7 +105,7 @@ const Input: React.FC<Props> = (props: Props) => {
           />
         </IonItem>
 
-        <IonLabel className={classes.itemDividerLabel}>Stars</IonLabel>
+        <IonLabel className={classes.itemDividerLabel}>Stars (1-7)</IonLabel>
         <IonItem className={classes.item}>
           <IonInput
             value={stars}

@@ -17,3 +17,13 @@ export const isGettingCardsError = createSelector(
   getCardsState,
   (cardsState) => cardsState.errorGettingCards
 );
+
+export const isAddingCardError = createSelector(
+  getCardsState,
+  (cardsState) => cardsState.errorAddingCard
+);
+
+export const isUpdatingCardError = createSelector(
+  getCardsState,
+  (cardsState) => cardsState.errorUpdatingCard
+);
