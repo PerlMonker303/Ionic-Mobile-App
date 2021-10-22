@@ -60,6 +60,9 @@ const Cards: React.FC = () => {
               rare={card.rare}
               image={card.image}
               postedBy={card.postedBy}
+              latitude={card.latitude}
+              longitude={card.longitude}
+              error={card.error}
             />
           </IonItem>
         ))}

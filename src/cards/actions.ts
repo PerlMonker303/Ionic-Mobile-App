@@ -15,6 +15,7 @@ export type AddCardFailure = {
   type: ActionTypes.ADD_CARD_FAILURE;
   errorMessage: string;
   transaction: Transaction;
+  newCard: Card;
 };
 
 export const addCardStart = (): AddCardStart => ({
@@ -28,11 +29,13 @@ export const addCardSuccess = (newCard: Card): AddCardSuccess => ({
 
 export const addCardFailure = (
   errorMessage: string,
-  transaction: Transaction
+  transaction: Transaction,
+  newCard: Card
 ): AddCardFailure => ({
   type: ActionTypes.ADD_CARD_FAILURE,
   errorMessage,
   transaction,
+  newCard,
 });
 
 export type GetCardsStart = {

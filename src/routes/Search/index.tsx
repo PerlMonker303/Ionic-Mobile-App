@@ -89,6 +89,8 @@ const Search: React.FC<Props> = (props: Props) => {
             rare={card.rare}
             image={card.image}
             postedBy={card.postedBy}
+            latitude={card.latitude}
+            longitude={card.longitude}
           />
         ))}
         {searchText === "" && (

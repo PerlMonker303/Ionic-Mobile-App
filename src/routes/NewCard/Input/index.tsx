@@ -57,6 +57,8 @@ const Input: React.FC<Props> = (props: Props) => {
       addedOn: Date(),
       image: uploadedPhoto,
       postedBy,
+      latitude: 0,
+      longitude: 0,
     };
     dispatch(addCard(newCard, user));
     resetStates();

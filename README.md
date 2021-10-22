@@ -10,10 +10,11 @@
 - pagination with infinite scrolling
 - search for cards by title
 - filter cards by number of stars
+- offline mode
+- geolocation for cards
 
 # To do:
 
-- offline mode
 - make sure you use the filesystem when using the camera
 
 # Project Counterparts

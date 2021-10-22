@@ -6,6 +6,7 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
+  IonIcon,
   IonItem,
   IonItemGroup,
   IonText,
@@ -14,6 +15,7 @@ import { CardMedia } from "@material-ui/core";
 import { useHistory } from "react-router";
 import CardType from "../../models/Card";
 import { useStyles } from "./styles";
+import { alertOutline, locationOutline } from "ionicons/icons";
 
 const Card: React.FC<CardType> = (props: CardType) => {
   const classes = useStyles();
@@ -23,12 +25,22 @@ const Card: React.FC<CardType> = (props: CardType) => {
     history.push("/edit/" + cardId);
   };
 
+  const goToLocationCard = (cardId: number) => {
+    history.push(`/location?id=${cardId}`);
+  };
+
   return (
     <IonCard className={classes.card}>
       <IonCardHeader>
         <IonItemGroup className={classes.cardHeader}>
           <IonText className={classes.cardTitle}>{props.title}</IonText>
-          <IonButton onClick={() => editCard(props.id)}>Edit</IonButton>
+          {props.error && <IonIcon icon={alertOutline} size="large"></IonIcon>}
+          <IonItemGroup>
+            <IonButton onClick={() => goToLocationCard(props.id)}>
+              <IonIcon icon={locationOutline}></IonIcon>
+            </IonButton>
+            <IonButton onClick={() => editCard(props.id)}>Edit</IonButton>
+          </IonItemGroup>
         </IonItemGroup>
 
         <IonCardSubtitle>Stars: {props.stars} / 7</IonCardSubtitle>

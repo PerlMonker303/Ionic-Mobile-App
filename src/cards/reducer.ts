@@ -44,10 +44,10 @@ const cardsReducer = (
       return {
         ...state,
         loadingAddingCard: false,
-        //In case this doesn't work we can try [...state.cards,action.newCard]
         cards: [action.newCard, ...state.cards],
       };
     case ActionTypes.ADD_CARD_FAILURE:
+      action.newCard.error = true;
       return {
         ...state,
         loadingAddingCard: false,

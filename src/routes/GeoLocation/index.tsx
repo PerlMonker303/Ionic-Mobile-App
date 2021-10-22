@@ -18,23 +18,36 @@ import { useHistory } from "react-router";
 import { Geolocation, Geoposition } from "ionic-native";
 import CustomMap from "./CustomMap";
 import { ROUTE_LOGIN } from "..";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "../../account/selectors";
+import { useLocation } from "react-router-dom";
+import Card from "../../models/Card";
+import { getCardByIdApi } from "../../api";
+import { updateCard } from "../../cards/thunkActions";
+import { getSocketConnection } from "../../app/selectors";
 
 type Props = {};
 
 const GeoLocation: React.FC<Props> = (props: Props) => {
   const history = useHistory();
+  const search = useLocation().search;
+  const cardId = new URLSearchParams(search).get("id");
   const loggedUser = useSelector(getCurrentUser);
+  const socketConnection = useSelector(getSocketConnection);
+  const dispatch = useDispatch();
   const [loading, setLoading] = React.useState<boolean>(false);
   const [position, setPosition] = React.useState<Geoposition>();
+  const [clickedMap, setClickedMap] = React.useState(false);
+  const [clickedLocation, setClickedLocation] =
+    React.useState<{ lat: number; lng: number }>();
+  const [currentCard, setCurrentCard] = React.useState<Card>();
 
   const getLocation = async () => {
     setLoading(true);
     try {
-      const position = await Geolocation.getCurrentPosition();
+      const pos = await Geolocation.getCurrentPosition();
       setLoading(false);
-      setPosition(position);
+      setPosition(pos);
     } catch (e) {}
   };
 
@@ -42,7 +55,51 @@ const GeoLocation: React.FC<Props> = (props: Props) => {
     if (!loggedUser) {
       history.replace(ROUTE_LOGIN);
     }
+
+    if (cardId) {
+      (async () => {
+        const card: Card = await getCardByIdApi(cardId, loggedUser?.Token!);
+        setCurrentCard(card);
+        let posCopy = await Geolocation.getCurrentPosition();
+        const gp: Geoposition = {
+          ...posCopy,
+          coords: {
+            ...posCopy.coords,
+            latitude: card.latitude,
+            longitude: card.longitude,
+          },
+        };
+        setPosition(gp);
+      })();
+    }
   }, [loggedUser]);
+
+  const updateClicked = () => {
+    if (!clickedLocation) {
+      return;
+    }
+    if (!currentCard) {
+      return;
+    }
+    console.log(clickedLocation);
+    const updatedCard: Card = {
+      ...currentCard,
+      latitude: clickedLocation.lat,
+      longitude: clickedLocation.lng,
+    };
+    dispatch(updateCard(updatedCard));
+    socketConnection &&
+      socketConnection.invoke(
+        "CardModified",
+        loggedUser!.Id,
+        loggedUser?.Username
+      );
+    history.go(0);
+  };
+
+  React.useEffect(() => {
+    console.log(clickedLocation);
+  }, [clickedLocation]);
 
   return (
     <IonPage>
@@ -74,7 +131,21 @@ const GeoLocation: React.FC<Props> = (props: Props) => {
             : "Get location"}
         </IonButton>
 
-        {position && <CustomMap location={position} />}
+        {position && (
+          <CustomMap
+            position={position}
+            setClickedMap={setClickedMap}
+            setClickedLocation={setClickedLocation}
+            isMarkerShown
+            googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places"
+            loadingElement={<div style={{ height: `100%` }} />}
+            containerElement={<div style={{ height: `400px` }} />}
+            mapElement={<div style={{ height: `100%` }} />}
+          />
+        )}
+        <IonButton onClick={updateClicked} disabled={!clickedMap}>
+          Update
+        </IonButton>
       </IonContent>
     </IonPage>
   );

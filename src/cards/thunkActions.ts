@@ -38,6 +38,7 @@ import { User } from "../models/User";
 import { format } from "date-fns";
 import Transaction from "../models/Transaction";
 import { createTransaction } from "../utils/createTransaction";
+import { Geolocation } from "ionic-native";
 
 export const fetchCards =
   (): ThunkAction<void, RootState, unknown, Action<string>> =>
@@ -129,6 +130,11 @@ export const addCard =
           "MM/dd/yyyy HH:mm:ss a"
         );
       }
+
+      const currentPosition = await Geolocation.getCurrentPosition();
+      card.latitude = currentPosition.coords.latitude;
+      card.longitude = currentPosition.coords.longitude;
+
       await addCardApi(card, state.accountState.currentUser?.Token!);
 
       if (!card.image.startsWith("data:image/png;base64,")) {
@@ -143,7 +149,7 @@ export const addCard =
         "addCard",
         JSON.stringify({ card, user })
       );
-      dispatch(addCardFailure(error as string, failedTransaction));
+      dispatch(addCardFailure(error as string, failedTransaction, card));
     }
   };
 

@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { User } from "../models/User";
 import Card from "../models/Card";
-import Transaction from "../models/Transaction";
 
 export const WS_ENDPOINT = "http://localhost:5000/hub";
 const API_ENDPOINT = "http://localhost:5000/";
@@ -19,6 +18,14 @@ export const getAllCardsApi = (token: string): Promise<Card[]> => {
   return axiosInstance.get(`card?token=${token}`).then((res: AxiosResponse) => {
     return res.data;
   });
+};
+
+export const getCardByIdApi = (id: string, token: string): Promise<Card> => {
+  return axiosInstance
+    .get(`cardById?id=${id}&token=${token}`)
+    .then((res: AxiosResponse) => {
+      return res.data;
+    });
 };
 
 export const getCardsAfterIdApi = (
@@ -59,7 +66,6 @@ export const getCardsByStarsApi = (
 };
 
 export const addCardApi = (card: Card, token: string): Promise<Card> => {
-  console.log("----------------------------");
   return axiosInstance
     .post(`card?token=${token}`, card)
     .then((res) => res.data)

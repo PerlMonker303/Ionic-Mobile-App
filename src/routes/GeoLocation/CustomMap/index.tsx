@@ -1,30 +1,52 @@
 import "./styles.ts";
-import { Geoposition } from "ionic-native";
-import { Map, Marker, GoogleApiWrapper } from "google-maps-react";
+import {
+  GoogleMap,
+  Marker,
+  withGoogleMap,
+  withScriptjs,
+} from "react-google-maps";
+import React from "react";
 
-type Props = {
-  google: any;
-  location: Geoposition;
-};
+const CustomMap = withScriptjs(
+  withGoogleMap((props: any) => {
+    const [location, setLocation] = React.useState<{
+      lat: number;
+      lng: number;
+    }>({
+      lat: props.position.coords.latitude,
+      lng: props.position.coords.longitude,
+    });
 
-const CustomMap = (props: Props) => {
-  const { google, location } = props;
+    React.useEffect(() => {}, []);
 
-  return (
-    <>
-      <Map
-        google={google}
-        initialCenter={{
-          lat: location.coords.latitude,
-          lng: location.coords.longitude,
+    const mapClicked = (e: any) => {
+      setLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+      props.setClickedMap(true);
+      props.setClickedLocation(location);
+    };
+
+    if (!location) {
+      return <></>;
+    }
+
+    return (
+      <GoogleMap
+        defaultZoom={8}
+        defaultCenter={{
+          lat: location.lat,
+          lng: location.lng,
         }}
+        onClick={mapClicked}
       >
-        <Marker />
-      </Map>
-    </>
-  );
-};
+        <Marker
+          position={{
+            lat: location.lat,
+            lng: location.lng,
+          }}
+        />
+      </GoogleMap>
+    );
+  })
+);
 
-export default GoogleApiWrapper({
-  apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY!,
-})(CustomMap);
+export default CustomMap;

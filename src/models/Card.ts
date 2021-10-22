@@ -7,6 +7,9 @@ type Card = {
   rare: boolean;
   image: string;
   postedBy: string;
+  latitude: number;
+  longitude: number;
+  error?: boolean;
 };
 
 export default Card;

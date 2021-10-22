@@ -22,6 +22,7 @@ import { CardMedia } from "@material-ui/core";
 import { ROUTE_HOME } from "../..";
 import { getSocketConnection } from "../../../app/selectors";
 import { getCurrentUser } from "../../../account/selectors";
+import { Geolocation, Geoposition } from "ionic-native";
 
 const Input: React.FC = () => {
   const classes = useStyles();
@@ -39,6 +40,7 @@ const Input: React.FC = () => {
   const [postedBy, setPostedBy] = React.useState("");
   const [uploadedPhoto, setUploadedPhoto] = React.useState("");
   const [showPopover, setShowPopover] = React.useState(false);
+  const [position, setPosition] = React.useState<Geoposition>();
 
   const renderPopover = () => (
     <IonContent>
@@ -61,6 +63,18 @@ const Input: React.FC = () => {
       setRare(card.rare);
       setPostedBy(card.postedBy);
       setUploadedPhoto(card.image);
+      (async (card) => {
+        let posCopy = await Geolocation.getCurrentPosition();
+        const gp: Geoposition = {
+          ...posCopy,
+          coords: {
+            ...posCopy.coords,
+            latitude: card.latitude,
+            longitude: card.longitude,
+          },
+        };
+        setPosition(gp);
+      })(card);
     } else {
       setShowPopover(true);
     }
@@ -76,6 +90,8 @@ const Input: React.FC = () => {
       addedOn: Date(),
       image: uploadedPhoto,
       postedBy,
+      latitude: position?.coords.latitude!,
+      longitude: position?.coords.longitude!,
     };
     dispatch(updateCard(updatedCard));
     socketConnection &&
@@ -162,6 +178,7 @@ const Input: React.FC = () => {
         <IonItem className={classes.item}>
           <IonButton onClick={takePhoto}>Photo</IonButton>
         </IonItem>
+
         <IonButton onClick={updateClicked}>Update</IonButton>
       </IonList>
 
