@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  createAnimation,
   IonButton,
   IonContent,
   IonHeader,
@@ -50,6 +51,7 @@ const Home: React.FC<Props> = (props: Props) => {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = React.useState(false);
   const [selectedFilter, setSelectedFilter] = React.useState(-1);
   const [firstRender, setFirstRender] = React.useState(true);
+  const animationRef = React.useRef<HTMLDivElement>(null);
 
   const connectToWebSockets = async () => {
     const connection = new signalR.HubConnectionBuilder()
@@ -112,6 +114,7 @@ const Home: React.FC<Props> = (props: Props) => {
       history.replace(ROUTE_LOGIN);
     } else {
       dispatch(fetchCardsAfterId(-1, 3));
+      handlePlayAnimation();
     }
   }, [loggedUser]);
 
@@ -173,13 +176,30 @@ const Home: React.FC<Props> = (props: Props) => {
     }
   }, [isErrorAddingCard, isErrorUpdatingCard]);
 
+  const handlePlayAnimation = () => {
+    if (animationRef.current !== null) {
+      const animation = createAnimation()
+        .addElement(animationRef.current)
+        .duration(1000)
+        .direction("alternate")
+        .iterations(Infinity)
+        .fromTo("transform", "scale(1)", "scale(0.8)")
+        .easing("ease-out");
+      animation.play();
+    }
+  };
+
   return (
     <IonPage>
       <IonHeader>
         <IonItemGroup className={classes.header}>
           <IonItem className={classes.title}>Magic Cards</IonItem>
           <IonItemGroup className={classes.header_inner}>
-            {loggedUser && <IonLabel>Hi, {loggedUser.Username}!</IonLabel>}
+            {loggedUser && (
+              <IonLabel>
+                <div ref={animationRef}>Hi, {loggedUser.Username}!</div>
+              </IonLabel>
+            )}
 
             <IonButton onClick={clickedLogout}>
               <IonIcon icon={exitOutline}></IonIcon>

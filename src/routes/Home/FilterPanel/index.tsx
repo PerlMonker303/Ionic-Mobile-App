@@ -2,7 +2,7 @@ import { IonItem, IonList, IonListHeader } from "@ionic/react";
 import "./styles.ts";
 import React from "react";
 
-type Props = {
+export type Props = {
   setSelectedFilter: (value: number) => void;
   closeFilterPanel: () => void;
 };

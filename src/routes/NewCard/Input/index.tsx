@@ -8,6 +8,7 @@ import {
   IonLabel,
   IonIcon,
   IonChip,
+  createAnimation,
 } from "@ionic/react";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -20,6 +21,7 @@ import { checkmarkCircleOutline } from "ionicons/icons";
 import { CardMedia } from "@material-ui/core";
 import { ROUTE_HOME } from "../..";
 import { User } from "../../../models/User";
+import CustomModal from "../../../app/customModal";
 
 type Props = {
   user: User;
@@ -37,6 +39,10 @@ const Input: React.FC<Props> = (props: Props) => {
   const [rare, setRare] = React.useState(false);
   const [postedBy, setPostedBy] = React.useState("");
   const [uploadedPhoto, setUploadedPhoto] = React.useState("");
+  const animationRef1 = React.useRef<HTMLDivElement>(null);
+  const animationRef2 = React.useRef<HTMLDivElement>(null);
+  const animationRef3 = React.useRef<HTMLDivElement>(null);
+  const animationRef4 = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     setAllFieldsCompleted(
@@ -46,6 +52,12 @@ const Input: React.FC<Props> = (props: Props) => {
         uploadedPhoto !== ""
     );
   }, [title, description, stars, uploadedPhoto]);
+
+  React.useEffect(() => {
+    (async () => {
+      await handlePlayAnimations();
+    })();
+  }, []);
 
   const addClicked = () => {
     const newCard: Card = {
@@ -82,10 +94,44 @@ const Input: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const handlePlayAnimations = async () => {
+    // using chaining
+    if (
+      animationRef1.current &&
+      animationRef2.current &&
+      animationRef3.current &&
+      animationRef4.current
+    ) {
+      const animation1 = createAnimation()
+        .addElement(animationRef1.current)
+        .duration(1000)
+        .fromTo("transform", "scale(1.5)", "scale(1)");
+      const animation2 = createAnimation()
+        .addElement(animationRef2.current)
+        .duration(1000)
+        .fromTo("transform", "scale(1.5)", "scale(1)");
+      const animation3 = createAnimation()
+        .addElement(animationRef3.current)
+        .duration(1000)
+        .fromTo("transform", "scale(1.5)", "scale(1)");
+      const animation4 = createAnimation()
+        .addElement(animationRef4.current)
+        .duration(1000)
+        .fromTo("transform", "scale(1.5)", "scale(1)");
+
+      await animation1.play();
+      await animation2.play();
+      await animation3.play();
+      await animation4.play();
+    }
+  };
+
   return (
     <IonContent fullscreen>
       <IonList>
-        <IonLabel className={classes.itemDividerLabel}>Title</IonLabel>
+        <div className={classes.itemDividerLabel} ref={animationRef1}>
+          Title
+        </div>
         <IonItem className={classes.item}>
           <IonInput
             placeholder="ex: Phyrexian Rebirth"
@@ -96,7 +142,9 @@ const Input: React.FC<Props> = (props: Props) => {
           />
         </IonItem>
 
-        <IonLabel className={classes.itemDividerLabel}>Description</IonLabel>
+        <div className={classes.itemDividerLabel} ref={animationRef2}>
+          Description
+        </div>
         <IonItem className={classes.item}>
           <IonInput
             placeholder="ex: Destroy all creatures from your opponent's hand."
@@ -107,7 +155,9 @@ const Input: React.FC<Props> = (props: Props) => {
           />
         </IonItem>
 
-        <IonLabel className={classes.itemDividerLabel}>Stars (1-7)</IonLabel>
+        <div className={classes.itemDividerLabel} ref={animationRef3}>
+          Stars (1-7)
+        </div>
         <IonItem className={classes.item}>
           <IonInput
             value={stars}
@@ -128,9 +178,9 @@ const Input: React.FC<Props> = (props: Props) => {
           <IonLabel>Is it rare? </IonLabel>
           <IonCheckbox checked={rare} onIonChange={(e) => setRare(!rare)} />
         </IonItem>
-        <IonLabel className={classes.itemDividerLabel}>
+        <div className={classes.itemDividerLabel} ref={animationRef4}>
           Take a picture of the card
-        </IonLabel>
+        </div>
         {uploadedPhoto !== "" && (
           <IonItem className={classes.item}>
             <CardMedia
@@ -150,10 +200,15 @@ const Input: React.FC<Props> = (props: Props) => {
             </IonChip>
           )}
         </IonItem>
-        <IonButton disabled={!allFieldsCompleted} onClick={addClicked}>
-          Add
-        </IonButton>
       </IonList>
+      <CustomModal
+        disabled={!allFieldsCompleted}
+        message={"Are you sure?"}
+        buttonMessageClose={"Cancel"}
+        buttonMessageOpen={"Add"}
+        buttonMessageConfirm={"Confirm"}
+        onConfirm={addClicked}
+      />
     </IonContent>
   );
 };
