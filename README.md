@@ -12,6 +12,7 @@
 - filter cards by number of stars
 - offline mode
 - geolocation for cards
+- added animations when adding a new card as well as a modal
 
 # To do:
 
